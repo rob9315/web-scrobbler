@@ -24,6 +24,13 @@ export interface ArtistTrackInfo {
 	track?: string | null;
 }
 
+export interface TrackInfoWithArt extends ArtistTrackInfo {
+	/**
+	 * Track Art URL.
+	 */
+	trackArt?: string | null;
+}
+
 export interface TrackInfoWithAlbum extends ArtistTrackInfo {
 	/**
 	 * Album name
@@ -73,6 +80,11 @@ export interface State extends BaseState {
 	 * Origin URL.
 	 */
 	originUrl?: string | null;
+
+	/**
+	 * Track Art URL.
+	 */
+	trackUrl?: string | null;
 
 	/**
 	 * Is scrobbling allowed

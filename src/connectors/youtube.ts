@@ -1,4 +1,4 @@
-import type { ArtistTrackInfo, TrackInfoWithAlbum } from '@/core/types';
+import type { ArtistTrackInfo, BaseState, TrackInfoWithAlbum, TrackInfoWithArt } from '@/core/types';
 
 export {};
 
@@ -71,12 +71,12 @@ const getTrackInfoFromYoutubeMusicCache: {
 		done?: boolean;
 		recognisedByYtMusic?: boolean;
 		videoId?: string | null;
-		currentTrackInfo?: { artist?: string; track?: string };
+		currentTrackInfo?: TrackInfoWithArt;
 	};
 } = {};
 
 const trackInfoGetters: (() =>
-	| ArtistTrackInfo
+	| TrackInfoWithArt
 	| null
 	| undefined
 	| Record<string, never>
@@ -98,6 +98,8 @@ Connector.scrobbleInfoStyle = {
 	fontSize: '1.17em',
 	fontWeight: '700',
 };
+
+Connector.trackArtSelector = 'ytd-watch-metadata:has(ytd-video-owner-renderer ytd-channel-name .badge-shape-style-type-verified-artist) #items yt-video-attribute-view-model img';
 
 Connector.loveButtonSelector =
 	'ytd-watch-metadata like-button-view-model button[aria-pressed="false"]';
@@ -159,6 +161,33 @@ Connector.getTrackInfo = () => {
 
 	return trackInfo;
 };
+
+Connector.getTrackArt = () => {
+	const img = document.querySelector(Connector.trackArtSelector as string);
+	if (img) {
+		// console.log(img);
+		if (!img.hasAttribute("src")) {
+			// console.log("doesn't have attribute src");
+			// setTimeout(()=>{
+			// 	console.log(JSON.stringify(img));
+			// }, 100)
+			// onviewportentered();
+			// img.dispatchEvent(new CustomEvent("onViewportEntered"));
+			// console.log((img as any).onViewportEntered);
+			
+		}
+		let src = img.getAttribute("src");
+		if (src) {
+			// console.log("has src attribute");
+			return src;
+		}
+		// console.log("doesn't have attribute src AFTER onViewportEntered");
+	}
+	// console.log("ytmusic fallback");
+	
+	const trackInfo = getTrackInfoFromYoutubeMusic() ?? {};
+	return trackInfo.trackArt;
+}
 
 Connector.getTimeInfo = () => {
 	const videoElement = document.querySelector(
@@ -258,7 +287,11 @@ function areChaptersAvailable() {
 		// referring users to the timeline ("In this video"). hard to check for
 		// because that text gets translated, we can however check if the
 		// description has a chapter like that, if not it's not a real chapter
-		if (!document.querySelector(`.ytd-watch-metadata ytd-macro-markers-list-item-renderer #details:has([title="${CSS.escape(text)}"]):has(#time)`)) {
+		if (
+			!document.querySelector(
+				`.ytd-watch-metadata ytd-macro-markers-list-item-renderer #details:has([title="${CSS.escape(text)}"]):has(#time)`,
+			)
+		) {
 			return false;
 		}
 	}
@@ -396,7 +429,7 @@ function getTrackInfoFromDescription() {
 }
 
 function getTrackInfoFromYoutubeMusic():
-	| ArtistTrackInfo
+	| TrackInfoWithArt
 	| Record<string, never>
 	| undefined {
 	// if neither getTrackInfoFromYtMusicEnabled nor scrobbleMusicRecognisedOnly
@@ -463,18 +496,23 @@ function getTrackInfoFromYoutubeMusic():
 					) || false,
 			};
 
+			const is_atv = videoInfo.videoDetails?.musicVideoType ===
+					'MUSIC_VIDEO_TYPE_ATV';
+			const is_omv = videoInfo.videoDetails?.musicVideoType ===
+					'MUSIC_VIDEO_TYPE_OMV';
+
 			// if videoDetails is not MUSIC_VIDEO_TYPE_OMV, it seems like it's
 			// not something youtube music actually knows, so it usually gives
 			// wrong results, so we only return if it is that musicVideoType
 			if (
-				videoInfo.videoDetails?.musicVideoType ===
-				'MUSIC_VIDEO_TYPE_OMV'
+				is_omv || is_atv
 			) {
+				const thumbnails = videoInfo.videoDetails.thumbnail?.thumbnails;
 				getTrackInfoFromYoutubeMusicCache[
 					videoId ?? ''
 				].currentTrackInfo = {
 					artist: videoInfo.videoDetails.author,
-
+					trackArt: is_atv ? thumbnails?.[thumbnails?.length - 1]?.url : undefined,
 					track: videoInfo.videoDetails.title,
 				};
 			}
@@ -500,7 +538,40 @@ function getTrackInfoFromChapters() {
 		};
 	}
 
-	const chapterName = Util.getTextFromSelectors(chapterNameSelector);
+	let chapterName = Util.getTextFromSelectors(chapterNameSelector);
+
+	const chapters = document.querySelectorAll(".ytd-watch-metadata ytd-macro-markers-list-item-renderer > #details:has([title]):has(#time)");
+	const time = Util.getTextFromSelectors(".ytp-time-current");
+	let times = time?.split(":").map(a => +a);
+
+	chaptersearch: for (let i = 0; i < chapters.length && times; i++) {
+		let next_chapter = chapters[i+1];
+		if (next_chapter) {
+			let next_chapter_time = next_chapter.querySelector("#time")?.textContent;
+			let nc_times = next_chapter_time?.split(":");
+			if (!nc_times) continue;
+			if (times.length > nc_times?.length) continue;
+
+			unitcmp: for (let j = 0; j < times.length; j++) {
+				let unit = times[j];
+				let nc_unit = +nc_times[j];
+				if (unit > nc_unit) continue chaptersearch;
+				if (unit < nc_unit) break;
+				continue unitcmp;
+			}
+			
+			// if we arrive here, the next chapter has not yet started
+			
+		}
+
+		let chapter = chapters[i];
+
+		let chaptNam = chapter.querySelector("[title]")?.textContent;
+		if (chaptNam)
+			chapterName = chaptNam;
+		break;
+	};
+
 	const artistTrack = Util.processYtVideoTitle(chapterName);
 	if (!artistTrack.track) {
 		artistTrack.track = chapterName;
