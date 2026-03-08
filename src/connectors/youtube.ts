@@ -265,6 +265,16 @@ function areChaptersAvailable() {
 		) {
 			return false;
 		}
+		// YouTube sometimes has AI-generated chapters. (#5617)
+		// if they are generated, the sidebar chapter list has a disclaimer
+		// above it as the first item in the contents.
+		if (
+			document.querySelector(
+				'#contents>ytd-macro-markers-info-item-renderer',
+			)
+		) {
+			return false;
+		}
 	}
 
 	// Return the text if no sponsorblock text.
