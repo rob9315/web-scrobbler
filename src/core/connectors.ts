@@ -2807,4 +2807,10 @@ export default <ConnectorMeta[]>[
 		js: 'meloradio.js',
 		id: 'meloradio',
 	},
+	{
+		label: 'zxART',
+		matches: ['*://zxart.ee/*'],
+		js: 'zxart.js',
+		id: 'zxart',
+	},
 ];
