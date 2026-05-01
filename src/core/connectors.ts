@@ -2391,4 +2391,9 @@ export default <{ [id: string]: ConnectorMeta }>{
 		matches: ['*://zxart.ee/*'],
 		js: 'zxart.js',
 	},
+	'my-other-new-connector': {
+		label: 'Site B',
+		matches: ['*://a-site.b/*'],
+		js: 'site-b.js',
+	},
 };
