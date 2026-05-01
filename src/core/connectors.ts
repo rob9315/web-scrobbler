@@ -2391,4 +2391,9 @@ export default <{ [id: string]: ConnectorMeta }>{
 		matches: ['*://zxart.ee/*'],
 		js: 'zxart.js',
 	},
+	'my-shiny-new-connector': {
+		label: 'Site A',
+		matches: ['*://a-site.a/*'],
+		js: 'site-a.js',
+	},
 };
