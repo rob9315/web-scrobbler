@@ -21,34 +21,34 @@ import * as BrowserStorage from '@/core/storage/browser-storage';
 // Re-export for backward compatibility
 export { debugLog };
 
+type SomeSpaces<T extends string> = ` ${T}` | ` ${T} ` | `${T} `;
+type MaybeSpaces<T extends string> = SomeSpaces<T> | T;
+
 /**
  * All the separators used by the core and by connectors.
  * This can be expanded just fine, do so if you run into trouble while developing a connector.
  */
 export type Separator =
-	| ' -- '
-	| '--'
-	| ' ~ '
-	| ' \u002d '
-	| ' \u2013 '
-	| ' \u2014 '
-	| ' \u2022 '
-	| ' // '
-	| '\u002d'
-	| '\u2013'
-	| '\u2014'
-	| ':'
-	| '|'
-	| '///'
-	| '/'
-	| '~'
-	| ' | '
-	| '<br/>'
-	| '<br>'
+	| SomeSpaces<
+			| '\u002d' // dash
+			| '\u2013' // ndash
+			| '\u2014' // mdash
+			| '//'
+	  >
+	| MaybeSpaces<
+			| '--'
+			| '~'
+			| '\u00b7' // smalldot ·
+			| '\u2022' // bigdot •
+			| ':'
+			| '|'
+			| '///'
+			| '/'
+			| '<br/>'
+			| '<br>'
+	  >
 	| ' by '
-	| ', '
-	| '·'
-	| ' ·';
+	| ', ';
 
 /**
  * Separator used to join array of artist names into a single string.
@@ -59,13 +59,13 @@ export const ARTIST_SEPARATOR = ', ';
  * Default array of separators used to split artist and track info.
  * Push new separators in the implementation if required.
  */
-export const defaultSeparators = [
+export const defaultSeparators: Separator[] = [
 	' -- ',
 	'--',
 	' ~ ',
-	' \u002d ',
-	' \u2013 ',
-	' \u2014 ',
+	' \u002d ', // dash
+	' \u2013 ', // ndash
+	' \u2014 ', // mdash
 	' // ',
 	' \u002d',
 	' \u2013',
