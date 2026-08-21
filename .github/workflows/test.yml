@@ -1,9 +1,5 @@
 name: Test
-on:
-  push:
-    branches: [master]
-  pull_request:
-    types: [opened, synchronize]
+on: push
 jobs:
   test:
     name: Run tests
@@ -21,7 +17,105 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Run tests 01
+        run: npm run test
+      - name: Run tests 02
+        run: npm run test
+      - name: Run tests 03
+        run: npm run test
+      - name: Run tests 04
+        run: npm run test
+      - name: Run tests 05
+        run: npm run test
+      - name: Run tests 06
+        run: npm run test
+      - name: Run tests 07
+        run: npm run test
+      - name: Run tests 08
+        run: npm run test
+      - name: Run tests 09
+        run: npm run test
+      - name: Run tests 10
+        run: npm run test
+      - name: Run tests 11
+        run: npm run test
+      - name: Run tests 12
+        run: npm run test
+      - name: Run tests 13
+        run: npm run test
+      - name: Run tests 14
+        run: npm run test
+      - name: Run tests 15
+        run: npm run test
+      - name: Run tests 16
+        run: npm run test
+      - name: Run tests 17
+        run: npm run test
+      - name: Run tests 18
+        run: npm run test
+      - name: Run tests 19
+        run: npm run test
+      - name: Run tests 20
+        run: npm run test
+      - name: Run tests 21
+        run: npm run test
+      - name: Run tests 22
+        run: npm run test
+      - name: Run tests 23
+        run: npm run test
+      - name: Run tests 24
+        run: npm run test
+      - name: Run tests 25
+        run: npm run test
+      - name: Run tests 26
+        run: npm run test
+      - name: Run tests 27
+        run: npm run test
+      - name: Run tests 28
+        run: npm run test
+      - name: Run tests 29
+        run: npm run test
+      - name: Run tests 30
+        run: npm run test
+      - name: Run tests 31
+        run: npm run test
+      - name: Run tests 32
+        run: npm run test
+      - name: Run tests 33
+        run: npm run test
+      - name: Run tests 34
+        run: npm run test
+      - name: Run tests 35
+        run: npm run test
+      - name: Run tests 36
+        run: npm run test
+      - name: Run tests 37
+        run: npm run test
+      - name: Run tests 38
+        run: npm run test
+      - name: Run tests 39
+        run: npm run test
+      - name: Run tests 40
+        run: npm run test
+      - name: Run tests 41
+        run: npm run test
+      - name: Run tests 42
+        run: npm run test
+      - name: Run tests 43
+        run: npm run test
+      - name: Run tests 44
+        run: npm run test
+      - name: Run tests 45
+        run: npm run test
+      - name: Run tests 46
+        run: npm run test
+      - name: Run tests 47
+        run: npm run test
+      - name: Run tests 48
+        run: npm run test
+      - name: Run tests 49
+        run: npm run test
+      - name: Run tests 50
         run: npm run test
 
   test_typescript:
