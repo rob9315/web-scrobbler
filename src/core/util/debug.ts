@@ -1,6 +1,6 @@
 'use strict';
 
-const Options = import('@/core/storage/options');
+import { getOption, DEBUG_LOGGING_ENABLED } from '@/core/storage/options';
 
 /**
  * Log type for debug messages.
@@ -14,9 +14,7 @@ export type DebugLogType = 'log' | 'error' | 'warn' | 'info';
 class DebugLogQueue {
 	private queue: { text: unknown; logType: DebugLogType }[] = [];
 	private isActive = false;
-	private shouldPrint = Options.then((awaitedOptions) =>
-		awaitedOptions.getOption(awaitedOptions.DEBUG_LOGGING_ENABLED),
-	);
+	private shouldPrint = getOption(DEBUG_LOGGING_ENABLED);
 
 	/**
 	 * Enqueue a log message to be printed.
